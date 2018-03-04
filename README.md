@@ -1,5 +1,5 @@
 # Курс «Технологии Java» ИТМО
-Tests and problems were taken from [Korneev Georgy site's](https://kgeorgiy.info)
+Tests and problems were taken from [Korneev Georgy site's](http://kgeorgiy.info)
 
 ## Запуск тестов
 (linux only)
