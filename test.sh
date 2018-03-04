@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 function compile {
-  javac java/ru/ifmo/rain/rykunov/$1/*.java
+  javac -cp ./artifacts/$2.jar java/ru/ifmo/rain/rykunov/$1/*.java
 }
 
 function removeClassFiles {
@@ -12,7 +12,7 @@ type=$2
 salt=$3
 case "$hw" in
   "1")
-  compile "walk"
+  compile "walk" "WalkTest"
   case "$type" in
     "easy")
     java -cp ./java:./artifacts/WalkTest.jar:./lib/* info.kgeorgiy.java.advanced.walk.Tester Walk ru.ifmo.rain.rykunov.walk.RecursiveWalk $salt
@@ -24,7 +24,7 @@ case "$hw" in
   removeClassFiles "walk"
   ;;
   "2")
-  compile "arraySet"
+  compile "arraySet" "ArraySetTest"
   case "$type" in
     "easy")
     java -cp ./java:./artifacts/ArraySetTest.jar:./lib/* info.kgeorgiy.java.advanced.arrayset.Tester SortedSet ru.ifmo.rain.rykunov.arraySet.ArraySet $salt
@@ -34,6 +34,18 @@ case "$hw" in
     ;;
   esac
   removeClassFiles "arraySet"
+  ;;
+  "3")
+  compile "student" "StudentTest"
+  case "$type" in
+    "easy")
+    java -cp ./java:./artifacts/StudentTest.jar:./lib/* info.kgeorgiy.java.advanced.student.Tester StudentQuery ru.ifmo.rain.rykunov.student.StudentDB $salt
+    ;;
+    "hard")
+    java -cp ./java:./artifacts/StudentTest.jar:./lib/* info.kgeorgiy.java.advanced.student.Tester StudentGroupQuery ru.ifmo.rain.rykunov.student.StudentDB $salt
+    ;;
+  esac
+  removeClassFiles "student"
   ;;
 esac
 
