@@ -77,6 +77,7 @@ public class ArraySet<T> extends AbstractSet<T> implements NavigableSet<T> {
         throw new UnsupportedOperationException();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean contains(Object o) {
         // It's ok to throw ClassCastException
