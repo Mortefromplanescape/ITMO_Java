@@ -30,10 +30,10 @@ Tests and problems were taken from [Korneev Georgy site's](http://kgeorgiy.info)
 
  * простой вариант:
     [интерфейс](java/info/kgeorgiy/java/advanced/student/StudentQuery.java),
-    [тесты](java/info/kgeorgiy/java/advanced/student/StudentQueryTest.java)
+    [тесты](java/info/kgeorgiy/java/advanced/student/StudentQueryFullTest.java)
  * сложный вариант:
     [интерфейс](java/info/kgeorgiy/java/advanced/student/StudentGroupQuery.java),
-    [тесты](java/info/kgeorgiy/java/advanced/student/StudentGroupQueryTest.java)
+    [тесты](java/info/kgeorgiy/java/advanced/student/StudentGroupQueryFullTest.java)
 
 
 ## Домашнее задание 2. ArraySortedSet
