@@ -16,9 +16,9 @@ Tests and problems were taken from [Korneev Georgy site's](http://kgeorgiy.info)
 Тестирование
 
  * простой вериант:
-    ```info.kgeorgiy.java.advanced.implementor.Tester interface <полное имя класса>```
+    `info.kgeorgiy.java.advanced.implementor.Tester interface <полное имя класса>`
  * сложный вериант:
-    ```info.kgeorgiy.java.advanced.implementor.Tester class <полное имя класса>```
+    `info.kgeorgiy.java.advanced.implementor.Tester class <полное имя класса>`
 
 Исходный код тестов:
 
@@ -36,12 +36,8 @@ Tests and problems were taken from [Korneev Georgy site's](http://kgeorgiy.info)
      * Применение лямбда-выражений и поток.
      * Избавление от повторяющегося кода.
 
-Тестирование
-
- * простой вариант:
-    ```info.kgeorgiy.java.advanced.student.Tester StudentQuery <полное имя класса>```
- * сложный вариант:
-    ```info.kgeorgiy.java.advanced.student.Tester StudentGroupQuery <полное имя класса>```
+Решение:
+  * [простой вариант](java/ru/ifmo/rain/rykunov/student)
 
 
 Исходный код
@@ -80,7 +76,7 @@ Tests and problems were taken from [Korneev Georgy site's](http://kgeorgiy.info)
   1. Разработайте класс Walk, осуществляющий подсчет хеш-сумм файлов.
      * Формат запуска `java Walk <входной файл> <выходной файл>`
      * Входной файл содержит список файлов, которые требуется обойти.
-     * Выходной файл должен содержать по одной строке для каждого файла. Формат строки: 
+     * Выходной файл должен содержать по одной строке для каждого файла. Формат строки:
          `<шестнадцатеричная хеш-сумма> <путь к файлу>`
      * Для подсчета хеш-суммы используйте алгоритм [FNV](https://ru.wikipedia.org/wiki/FNV).
      * Если при чтении файла возникают ошибки, укажите в качестве его хеш-суммы 00000000.
@@ -88,7 +84,7 @@ Tests and problems were taken from [Korneev Georgy site's](http://kgeorgiy.info)
      * Размеры файлов могут превышать размер оперативной памяти.
   2. Усложненная версия:
      * Разработайте класс RecursiveWalk, осуществляющий подсчет хеш-сумм файлов в директориях
-     * Входной файл содержит список файлов и директорий, которые требуется обойти. 
+     * Входной файл содержит список файлов и директорий, которые требуется обойти.
        Обход директорий осуществляется рекурсивно.
   3. При выполнении задания следует обратить внимание на:
      * Дизайн и обработку исключений, диагностику ошибок.
@@ -98,7 +94,7 @@ Tests and problems were taken from [Korneev Georgy site's](http://kgeorgiy.info)
 
 Решение:
  * [сложный вариант](java/ru/ifmo/rain/rykunov/walk)
-  
+
 
 Исходный код тестов:
 
