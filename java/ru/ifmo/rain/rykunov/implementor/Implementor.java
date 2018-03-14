@@ -36,8 +36,6 @@ public class Implementor implements Impler {
 
     }
 
-    private String realizationName;
-
     private Path getImplInterfacePath(Class<?> token, Path root) throws IOException {
         if (token.getPackage() != null) {
             root = root.resolve(token.getPackage().getName().replace('.', '/') + "/");
@@ -126,12 +124,10 @@ public class Implementor implements Impler {
             throw new ImplerException("Required interface as first argument");
         }
 
-        realizationName = token.getSimpleName() + "Impl";
-
         try (Writer out = Files.newBufferedWriter(getImplInterfacePath(token, root))) {
             out.write(String.format("%s %s{%n %s %n}%n",
                     getPackageString(token),
-                    getHeadString(token, realizationName),
+                    getHeadString(token, token.getSimpleName() + "Impl"),
                     getMethodsString(token)));
         } catch (IOException e) {
             throw new ImplerException("Error when writing to required path to Impl file");
