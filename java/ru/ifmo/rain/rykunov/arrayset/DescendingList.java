@@ -1,4 +1,4 @@
-package ru.ifmo.rain.rykunov.arraySet;
+package ru.ifmo.rain.rykunov.arrayset;
 
 import java.util.AbstractList;
 import java.util.List;
