@@ -23,7 +23,7 @@ Tests and problems were taken from [Korneev Georgy site's](http://kgeorgiy.info)
      *  *Бонусный* — `Implementor` должен уметь реализовывать *generic*-классы и интерфейсы. Сгенерированный код должен иметь корректные параметры типов и не порождать *UncheckedWarning*.
 
 Решение:
-* [простой вариант](java/ru/rain/ifmo/implementor)
+* [простой вариант](java/ru/ifmo/rain/implementor)
 
 Класс должен реализовывать интерфейс
 [Impler](java/info/kgeorgiy/java/advanced/implementor/Impler.java).
