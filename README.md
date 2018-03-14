@@ -61,7 +61,7 @@ Tests and problems were taken from [Korneev Georgy site's](http://kgeorgiy.info)
      *  Избавление от повторяющегося кода.
 
 Решение:
- * [сложный вариант](java/ru/ifmo/rain/rykunov/arraySet)
+ * [сложный вариант](java/ru/ifmo/rain/rykunov/arrayset)
 
 Исходный код тестов:
 

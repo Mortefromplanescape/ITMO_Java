@@ -7,6 +7,10 @@ function removeClassFiles {
   rm java/ru/ifmo/rain/rykunov/$1/*.class
 }
 
+function execute {
+  java -cp ./java:./artifacts/$1.jar:./lib/* info.kgeorgiy.java.advanced.$2.Tester $3 ru.ifmo.rain.rykunov.$2.$4 $5
+}
+
 hw=$1
 type=$2
 salt=$3
@@ -15,38 +19,45 @@ case "$hw" in
   compile "walk" "WalkTest"
   case "$type" in
     "easy")
-    java -cp ./java:./artifacts/WalkTest.jar:./lib/* info.kgeorgiy.java.advanced.walk.Tester Walk ru.ifmo.rain.rykunov.walk.RecursiveWalk $salt
+    execute "WalkTest" "walk" "Walk" "RecursiveWalk" $salt
     ;;
     "hard")
-    java -cp ./java:./artifacts/WalkTest.jar:./lib/* info.kgeorgiy.java.advanced.walk.Tester RecursiveWalk ru.ifmo.rain.rykunov.walk.RecursiveWalk $salt
+    execute "WalkTest" "walk" "RecursiveWalk" "RecursiveWalk" $salt
     ;;
   esac
   removeClassFiles "walk"
   ;;
   "2")
-  compile "arraySet" "ArraySetTest"
+  compile "arrayset" "ArraySetTest"
   case "$type" in
     "easy")
-    java -cp ./java:./artifacts/ArraySetTest.jar:./lib/* info.kgeorgiy.java.advanced.arrayset.Tester SortedSet ru.ifmo.rain.rykunov.arraySet.ArraySet $salt
+    execute "ArraySetTest" "arrayset" "SortedSet" "ArraySet" $salt
     ;;
     "hard")
-    java -cp ./java:./artifacts/ArraySetTest.jar:./lib/* info.kgeorgiy.java.advanced.arrayset.Tester NavigableSet ru.ifmo.rain.rykunov.arraySet.ArraySet $salt
+    execute "ArraySetTest" "arrayset" "NavigableSet" "ArraySet" $salt
     ;;
   esac
-  removeClassFiles "arraySet"
+  removeClassFiles "arrayset"
   ;;
   "3")
   compile "student" "StudentTest"
   case "$type" in
     "easy")
-    java -cp ./java:./artifacts/StudentTest.jar:./lib/* info.kgeorgiy.java.advanced.student.Tester StudentQuery ru.ifmo.rain.rykunov.student.StudentDB $salt
-    ;;
-    "hard")
-    java -cp ./java:./artifacts/StudentTest.jar:./lib/* info.kgeorgiy.java.advanced.student.Tester StudentGroupQuery ru.ifmo.rain.rykunov.student.StudentDB $salt
+    execute "StudentTest" "student" "StudentQuery" "StudentDB" $salt
     ;;
   esac
   removeClassFiles "student"
   ;;
+  "4")
+  compile "implementor" "ImplementorTest"
+  case "$type" in
+    "easy")
+        execute "ImplementorTest" "implementor" "interface" "Implementor" $salt
+    ;;
+  esac
+  removeClassFiles "implementor"
+  ;;
+
 esac
 
 exit 0
