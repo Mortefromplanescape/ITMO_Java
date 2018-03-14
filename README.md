@@ -30,8 +30,8 @@ Tests and problems were taken from [Korneev Georgy site's](http://kgeorgiy.info)
 
 Исходный код тестов:
 
-* [простой вариант](java/info/kgeorgiy/java/advanced/implementor/BasicInterfaceImplementorTest.java)
-* [сложный вариант](java/info/kgeorgiy/java/advanced/implementor/BasicClassImplementorTest.java)
+* [простой вариант](java/info/kgeorgiy/java/advanced/implementor/InterfaceImplementorTest.java)
+* [сложный вариант](java/info/kgeorgiy/java/advanced/implementor/ClassImplementorTest.java)
 
 
 ## Домашнее задание 3. Студенты
