@@ -54,6 +54,9 @@ case "$hw" in
     "easy")
         execute "ImplementorTest" "implementor" "interface" "Implementor" $salt
     ;;
+    "hard")
+        execute "ImplementorTest" "implementor" "class" "Implementor" $salt
+     ;;
   esac
   removeClassFiles "implementor"
   ;;

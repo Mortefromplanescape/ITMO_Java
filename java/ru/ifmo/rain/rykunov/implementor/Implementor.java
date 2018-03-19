@@ -2,10 +2,13 @@ package ru.ifmo.rain.rykunov.implementor;
 
 import info.kgeorgiy.java.advanced.implementor.Impler;
 import info.kgeorgiy.java.advanced.implementor.ImplerException;
+import info.kgeorgiy.java.advanced.implementor.JarImpler;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
@@ -14,11 +17,13 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-public class Implementor implements Impler {
+
+// TODO: add spaces
+public class Implementor implements JarImpler {
 
     public static void main(String[] args) {
         if (args == null || args[0] == null || args[1] == null) {
-            System.out.println("ERROR: required non null arguments: first is interface name, second is path to interface"); // TODO
+            System.out.println("ERROR: required non null arguments: first is interface name, second is path to interface");
             return;
         }
 
@@ -30,15 +35,22 @@ public class Implementor implements Impler {
         } catch (InvalidPathException e) {
             System.out.println("Invalid path(" + args[1] + ") to class: " + args[1]);
         } catch (ImplerException e) {
-            System.out.println("Error while implementing class: " + e.getMessage());
+            System.out.println("Error while implementing interface: " + e.getMessage());
         }
 
+    }
 
+    private String getIndent(int count) {
+        StringBuilder indent = new StringBuilder();
+        for (int i = 0; i < count; i++) {
+            indent.append("    ");
+        }
+        return indent.toString();
     }
 
     private Path getImplInterfacePath(Class<?> token, Path root) throws IOException {
         if (token.getPackage() != null) {
-            root = root.resolve(token.getPackage().getName().replace('.', '/') + "/");
+            root = root.resolve(token.getPackage().getName().replace(".", System.lineSeparator()) + System.lineSeparator());
             Files.createDirectories(root);
         }
         return root.resolve(token.getSimpleName() + "Impl.java");
@@ -76,7 +88,9 @@ public class Implementor implements Impler {
 
     private String getMethodHeadString(Method method) {
         return String.format(
-                "public %s %s ( %s ) %s",
+                "%s%n%s %s %s (%s) %s",
+                Arrays.stream(method.getDeclaredAnnotations()).map(Annotation::toString).collect(Collectors.joining("%n")),
+                Modifier.toString(method.getModifiers() & ~(Modifier.ABSTRACT | Modifier.TRANSIENT)),
                 method.getReturnType().getCanonicalName(),
                 method.getName(),
                 getArgumentsString(method),
@@ -85,7 +99,7 @@ public class Implementor implements Impler {
     }
 
     private String getReturnString(Method method) {
-        return String.format("return %s;%n", getReturnDefaultTypeString(method));
+        return String.format("return %s;", getReturnDefaultTypeString(method));
     }
 
     private String getReturnDefaultTypeString(Method method) {
@@ -100,16 +114,19 @@ public class Implementor implements Impler {
     }
 
     private String getMethodString(Method method) {
-        return String.format("%s{ %n %s }%n", getMethodHeadString(method), getReturnString(method));
+        return String.format(
+                "%s%s{%n%s%s%n}%n",
+                getIndent(1),
+                getMethodHeadString(method),
+                getIndent(2),
+                getReturnString(method)
+        );
     }
 
     private String getMethodsString(Class<?> token) {
         StringBuilder methods = new StringBuilder();
-        while (token != null) {
-            for (Method method : token.getDeclaredMethods()) {
-                methods.append(getMethodString(method));
-            }
-            token = token.getSuperclass();
+        for (Method method : token.getMethods()) {
+            methods.append(getMethodString(method));
         }
         return methods.toString();
     }
@@ -125,12 +142,17 @@ public class Implementor implements Impler {
         }
 
         try (Writer out = Files.newBufferedWriter(getImplInterfacePath(token, root))) {
-            out.write(String.format("%s %s{%n %s %n}%n",
+            out.write(String.format("%s %s{%n%s%n}%n",
                     getPackageString(token),
                     getHeadString(token, token.getSimpleName() + "Impl"),
                     getMethodsString(token)));
         } catch (IOException e) {
             throw new ImplerException("Error when writing to required path to Impl file");
         }
+    }
+
+    @Override
+    public void implementJar(Class<?> token, Path jarFile) throws ImplerException {
+
     }
 }
