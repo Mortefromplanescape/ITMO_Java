@@ -8,6 +8,24 @@ Tests and problems were taken from [Korneev Georgy site's](http://kgeorgiy.info)
 
 По умолчанию salt = ""
 
+# Домашнее задание 5. JarImplementor
+
+Класс должен реализовывать интерфейс
+[JarImpler](java/info/kgeorgiy/java/advanced/implementor/JarImpler.java).
+
+Тестирование
+
+ * простой вериант:
+    ```info.kgeorgiy.java.advanced.implementor.Tester jar-interface <полное имя класса>```
+ * сложный вариант:
+    ```info.kgeorgiy.java.advanced.implementor.Tester jar-class <полное имя класса>```
+
+Исходный код тестов:
+
+* [простой вариант](java/info/kgeorgiy/java/advanced/implementor/InterfaceJarImplementorTest.java)
+* [сложный вариант](java/info/kgeorgiy/java/advanced/implementor/ClassJarImplementorTest.java)
+
+
 ## Домашнее задание 4. Implementor
 
 Условие:
