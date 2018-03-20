@@ -4,32 +4,53 @@ import info.kgeorgiy.java.advanced.implementor.Impler;
 import info.kgeorgiy.java.advanced.implementor.ImplerException;
 import info.kgeorgiy.java.advanced.implementor.JarImpler;
 
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
+import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
-import java.nio.file.Files;
-import java.nio.file.InvalidPathException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.jar.Attributes;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
 
 
-// TODO: add spaces
 public class Implementor implements JarImpler {
 
+    private static void inputError() {
+        System.out.println("ERROR: required non null arguments: [-jar] className [*.jar]");
+    }
+
     public static void main(String[] args) {
-        if (args == null || args[0] == null || args[1] == null) {
-            System.out.println("ERROR: required non null arguments: first is interface name, second is path to interface");
+        if (args == null) {
+            inputError();
             return;
         }
 
-        Impler implementor = new Implementor();
+        JarImpler implementor = new Implementor();
         try {
-            implementor.implement(Class.forName(args[0]), Paths.get(args[1]));
+            if (args.length == 3 && args[0] != null && args[1] != null && args[2] != null) {
+                if (args[0].equals("-jar")) {
+                    implementor.implementJar(Class.forName(args[1]), Paths.get(args[2]));
+                } else {
+                    inputError();
+                }
+            }
+            if (args.length == 1 && args[0] != null) {
+                implementor.implement(Class.forName(args[0]), Paths.get("."));
+            } else {
+                inputError();
+            }
         } catch (ClassNotFoundException e) {
             System.out.println("Class: " + args[0] + "; not found");
         } catch (InvalidPathException e) {
@@ -50,10 +71,19 @@ public class Implementor implements JarImpler {
 
     private Path getImplInterfacePath(Class<?> token, Path root) throws IOException {
         if (token.getPackage() != null) {
-            root = root.resolve(token.getPackage().getName().replace(".", System.lineSeparator()) + System.lineSeparator());
+            root = root.resolve(token.getPackage().getName().replace(".", File.separator) + File.separator);
             Files.createDirectories(root);
         }
         return root.resolve(token.getSimpleName() + "Impl.java");
+    }
+
+    private Path getImplInterfaceJarPath(Class<?> token, Path root) throws IOException {
+        String interfacePath = getImplInterfacePath(token, root).toString();
+        if (interfacePath.endsWith(".java")) {
+            return Paths.get(interfacePath.substring(0, interfacePath.length() - 5) + ".class");
+        } else {
+            throw new IllegalArgumentException("Token is not a java file");
+        }
     }
 
     private String getPackageString(Class<?> token) {
@@ -151,8 +181,38 @@ public class Implementor implements JarImpler {
         }
     }
 
+    private void compileFiles(Path root, String file) {
+        final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        final List<String> args = new ArrayList<>();
+        args.add(file);
+        args.add("-cp");
+        args.add(root + File.pathSeparator + System.getProperty("java.class.path"));
+        compiler.run(null, null, null, args.toArray(new String[args.size()]));
+    }
+
+    private void jarWrite(Path jarFile, Path file) throws IOException {
+        Manifest manifest = new Manifest();
+        manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
+        try (JarOutputStream out = new JarOutputStream(Files.newOutputStream(jarFile), manifest)) {
+            out.putNextEntry(new ZipEntry(file.normalize().toString()));
+            Files.copy(file, out);
+            out.closeEntry();
+        }
+    }
+
     @Override
     public void implementJar(Class<?> token, Path jarFile) throws ImplerException {
-
+        try {
+            Path root = Paths.get(".");
+            JarImpler implementor = new Implementor();
+            implementor.implement(token, root);
+            Path javaFilePath = getImplInterfacePath(token, root);
+            Path classFilePath = getImplInterfaceJarPath(token, root);
+            compileFiles(root, javaFilePath.toString());
+            jarWrite(jarFile, classFilePath);
+            classFilePath.toFile().deleteOnExit();
+        } catch (IOException e) {
+            System.out.print("ERROR: can't create jar file, because some error with files.");
+        }
     }
 }

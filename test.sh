@@ -48,14 +48,14 @@ case "$hw" in
   esac
   removeClassFiles "student"
   ;;
-  "4")
-  compile "implementor" "ImplementorTest"
+  "5")
+  compile "implementor" "JarImplementorTest"
   case "$type" in
     "easy")
-        execute "ImplementorTest" "implementor" "interface" "Implementor" $salt
+        execute "JarImplementorTest" "implementor" "jar-interface" "Implementor" $salt
     ;;
     "hard")
-        execute "ImplementorTest" "implementor" "class" "Implementor" $salt
+        execute "JarImplementorTest" "implementor" "jar-class" "Implementor" $salt
      ;;
   esac
   removeClassFiles "implementor"
