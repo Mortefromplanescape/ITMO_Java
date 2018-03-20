@@ -22,13 +22,20 @@ import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 
-
+/**
+ * The class implements {@link JarImpler} interface
+ */
 public class Implementor implements JarImpler {
-
+    /**
+     * Function which prints error from main function
+     */
     private static void inputError() {
         System.out.println("ERROR: required non null arguments: [-jar] className [*.jar]");
     }
 
+    /**
+     * @param args kek
+     */
     public static void main(String[] args) {
         if (args == null) {
             inputError();
@@ -60,6 +67,10 @@ public class Implementor implements JarImpler {
 
     }
 
+    /**
+     * @param count kek
+     * @return kek
+     */
     private String getIndent(int count) {
         StringBuilder indent = new StringBuilder();
         for (int i = 0; i < count; i++) {
@@ -68,6 +79,12 @@ public class Implementor implements JarImpler {
         return indent.toString();
     }
 
+    /**
+     * @param token kek
+     * @param root kek
+     * @return kek
+     * @throws IOException kek
+     */
     private Path getImplInterfacePath(Class<?> token, Path root) throws IOException {
         if (token.getPackage() != null) {
             root = root.resolve(token.getPackage().getName().replace(".", File.separator) + File.separator);
@@ -76,6 +93,12 @@ public class Implementor implements JarImpler {
         return root.resolve(token.getSimpleName() + "Impl.java");
     }
 
+    /**
+     * @param token kek
+     * @param root kek
+     * @return kek
+     * @throws IOException kek
+     */
     private Path getImplInterfaceJarPath(Class<?> token, Path root) throws IOException {
         String interfacePath = getImplInterfacePath(token, root).toString();
         if (interfacePath.endsWith(".java")) {
@@ -85,6 +108,10 @@ public class Implementor implements JarImpler {
         }
     }
 
+    /**
+     * @param token kek
+     * @return kek
+     */
     private String getPackageString(Class<?> token) {
         if (token.getPackage() != null) {
             return String.format("package %s;%n", token.getPackage().getName());
@@ -92,10 +119,19 @@ public class Implementor implements JarImpler {
         return "";
     }
 
+    /**
+     * @param token kek
+     * @param className kek
+     * @return kek
+     */
     private String getHeadString(Class<?> token, String className) {
         return String.format("class %s implements %s", className, token.getSimpleName());
     }
 
+    /**
+     * @param method kek
+     * @return kek
+     */
     private String getArgumentsString(Method method) {
         Parameter[] args = method.getParameters();
         return Arrays.stream(args)
@@ -103,6 +139,10 @@ public class Implementor implements JarImpler {
                 .collect(Collectors.joining(", "));
     }
 
+    /**
+     * @param method kek
+     * @return kek
+     */
     private String getExceptionsString(Method method) {
         Class<?> exceptions[] = method.getExceptionTypes();
         StringBuilder exceptionsBuilder = new StringBuilder();
@@ -115,6 +155,10 @@ public class Implementor implements JarImpler {
         return exceptionsBuilder.toString();
     }
 
+    /**
+     * @param method kek
+     * @return kek
+     */
     private String getMethodHeadString(Method method) {
         return String.format(
                 "%s%n%s%s %s %s (%s) %s",
@@ -128,10 +172,18 @@ public class Implementor implements JarImpler {
         );
     }
 
+    /**
+     * @param method kek
+     * @return kek
+     */
     private String getReturnString(Method method) {
         return String.format("return %s;", getReturnDefaultTypeString(method));
     }
 
+    /**
+     * @param method kek
+     * @return kek
+     */
     private String getReturnDefaultTypeString(Method method) {
         Class<?> returnType = method.getReturnType();
         if (returnType.equals(boolean.class)) {
@@ -143,6 +195,10 @@ public class Implementor implements JarImpler {
         }
     }
 
+    /**
+     * @param method kek
+     * @return kek
+     */
     private String getMethodString(Method method) {
         return String.format(
                 "%s%s{%n%s%s%n%s}%n",
@@ -154,6 +210,10 @@ public class Implementor implements JarImpler {
         );
     }
 
+    /**
+     * @param token kek
+     * @return kek
+     */
     private String getMethodsString(Class<?> token) {
         StringBuilder methods = new StringBuilder();
         for (Method method : token.getMethods()) {
@@ -162,6 +222,11 @@ public class Implementor implements JarImpler {
         return methods.toString();
     }
 
+    /**
+     * @param token type token to create implementation for.
+     * @param root  root directory.
+     * @throws ImplerException kek
+     */
     @Override
     public void implement(Class<?> token, Path root) throws ImplerException {
         if (token == null || root == null) {
@@ -182,6 +247,10 @@ public class Implementor implements JarImpler {
         }
     }
 
+    /**
+     * @param root kek
+     * @param file kek
+     */
     private void compileFiles(Path root, String file) {
         final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         final List<String> args = new ArrayList<>();
@@ -191,6 +260,11 @@ public class Implementor implements JarImpler {
         compiler.run(null, null, null, args.toArray(new String[args.size()]));
     }
 
+    /**
+     * @param jarFile kek
+     * @param file kek
+     * @throws IOException kek
+     */
     private void jarWrite(Path jarFile, Path file) throws IOException {
         Manifest manifest = new Manifest();
         manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
@@ -201,6 +275,11 @@ public class Implementor implements JarImpler {
         }
     }
 
+    /**
+     * @param token   type token to create implementation for.
+     * @param jarFile target <tt>.jar</tt> file.
+     * @throws ImplerException kek
+     */
     @Override
     public void implementJar(Class<?> token, Path jarFile) throws ImplerException {
         try {
