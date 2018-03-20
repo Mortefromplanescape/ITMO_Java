@@ -1,6 +1,5 @@
 package ru.ifmo.rain.rykunov.implementor;
 
-import info.kgeorgiy.java.advanced.implementor.Impler;
 import info.kgeorgiy.java.advanced.implementor.ImplerException;
 import info.kgeorgiy.java.advanced.implementor.JarImpler;
 
@@ -14,7 +13,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -45,6 +43,7 @@ public class Implementor implements JarImpler {
                 } else {
                     inputError();
                 }
+                return;
             }
             if (args.length == 1 && args[0] != null) {
                 implementor.implement(Class.forName(args[0]), Paths.get("."));
@@ -88,7 +87,7 @@ public class Implementor implements JarImpler {
 
     private String getPackageString(Class<?> token) {
         if (token.getPackage() != null) {
-            return String.format("package %s; %n", token.getPackage().getName());
+            return String.format("package %s;%n", token.getPackage().getName());
         }
         return "";
     }
@@ -118,8 +117,9 @@ public class Implementor implements JarImpler {
 
     private String getMethodHeadString(Method method) {
         return String.format(
-                "%s%n%s %s %s (%s) %s",
+                "%s%n%s%s %s %s (%s) %s",
                 Arrays.stream(method.getDeclaredAnnotations()).map(Annotation::toString).collect(Collectors.joining("%n")),
+                getIndent(1),
                 Modifier.toString(method.getModifiers() & ~(Modifier.ABSTRACT | Modifier.TRANSIENT)),
                 method.getReturnType().getCanonicalName(),
                 method.getName(),
@@ -145,11 +145,12 @@ public class Implementor implements JarImpler {
 
     private String getMethodString(Method method) {
         return String.format(
-                "%s%s{%n%s%s%n}%n",
+                "%s%s{%n%s%s%n%s}%n",
                 getIndent(1),
                 getMethodHeadString(method),
                 getIndent(2),
-                getReturnString(method)
+                getReturnString(method),
+                getIndent(1)
         );
     }
 
@@ -172,7 +173,7 @@ public class Implementor implements JarImpler {
         }
 
         try (Writer out = Files.newBufferedWriter(getImplInterfacePath(token, root))) {
-            out.write(String.format("%s %s{%n%s%n}%n",
+            out.write(String.format("%s %s {%n%s%n}%n",
                     getPackageString(token),
                     getHeadString(token, token.getSimpleName() + "Impl"),
                     getMethodsString(token)));

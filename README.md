@@ -2,7 +2,7 @@
 Tests and problems were taken from [Korneev Georgy site's](http://kgeorgiy.info)
 
 ## Запуск тестов
-(linux only)
+(bash)
 
 В консоли: `./test.sh {hw#} {easy|hard} {salt}`
 
@@ -13,12 +13,8 @@ Tests and problems were taken from [Korneev Georgy site's](http://kgeorgiy.info)
 Класс должен реализовывать интерфейс
 [JarImpler](java/info/kgeorgiy/java/advanced/implementor/JarImpler.java).
 
-Тестирование
-
- * простой вериант:
-    ```info.kgeorgiy.java.advanced.implementor.Tester jar-interface <полное имя класса>```
- * сложный вариант:
-    ```info.kgeorgiy.java.advanced.implementor.Tester jar-class <полное имя класса>```
+Решение:
+* [простой вариант](java/ru/ifmo/rain/rykunov/implementor)
 
 Исходный код тестов:
 
