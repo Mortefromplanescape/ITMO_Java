@@ -11,11 +11,9 @@ import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Parameter;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
@@ -50,7 +48,7 @@ public class Implementor implements JarImpler {
             return;
         }
 
-        JarImpler implementor = new Implementor();
+        var implementor = new Implementor();
         try {
             if (args.length == 3 && args[0] != null && args[1] != null && args[2] != null) {
                 if (args[0].equals("-jar")) {
@@ -82,7 +80,7 @@ public class Implementor implements JarImpler {
      * @return {@link String} includes count of 4spaces tabs
      */
     private String getIndent(int count) {
-        StringBuilder indent = new StringBuilder();
+        var indent = new StringBuilder();
         for (int i = 0; i < count; i++) {
             indent.append("    ");
         }
@@ -99,7 +97,7 @@ public class Implementor implements JarImpler {
      * @throws IOException if couldn't create directories or resolve path to <tt>token</tt>'s package
      */
     private Path getImplInterfaceDirectoryPath(Class<?> token, Path root, boolean createDir) throws IOException {
-        Path directoryPath = root;
+        var directoryPath = root;
         if (token.getPackage() != null) {
             directoryPath = root.resolve(token.getPackage().getName().replace(".", File.separator) + File.separator);
             if (createDir) {
@@ -155,7 +153,7 @@ public class Implementor implements JarImpler {
      * @return {@link String} with format: "[[argument type] [argument name] separated by ',']"
      */
     private String getArgumentsString(Method method) {
-        Parameter[] args = method.getParameters();
+        var args = method.getParameters();
         return Arrays.stream(args)
                 .map(parameter -> parameter.getType().getCanonicalName() + " " + parameter.getName())
                 .collect(Collectors.joining(", "));
@@ -169,7 +167,7 @@ public class Implementor implements JarImpler {
      */
     private String getExceptionsString(Method method) {
         Class<?> exceptions[] = method.getExceptionTypes();
-        StringBuilder exceptionsBuilder = new StringBuilder();
+        var exceptionsBuilder = new StringBuilder();
         if (exceptions.length > 0) {
             exceptionsBuilder.append("throws ");
             exceptionsBuilder.append(Arrays.stream(exceptions)
@@ -249,7 +247,7 @@ public class Implementor implements JarImpler {
      * @return {@link String} includes realizations of all methods needs to be implemented
      */
     private String getMethodsString(Class<?> token) {
-        StringBuilder methods = new StringBuilder();
+        var methods = new StringBuilder();
         for (Method method : token.getMethods()) {
             methods.append(getMethodString(method));
         }
@@ -317,8 +315,8 @@ public class Implementor implements JarImpler {
      * @param file {@link Path} to file needs to compile from root
      */
     private void compileFiles(Path root, String file) {
-        final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        final List<String> args = new ArrayList<>();
+        var compiler = ToolProvider.getSystemJavaCompiler();
+        var args = new ArrayList<>();
         args.add(file);
         args.add("-cp");
         args.add(root + File.pathSeparator + System.getProperty("java.class.path"));
@@ -336,7 +334,7 @@ public class Implementor implements JarImpler {
      * @throws IOException if can't write to <tt>jarFile</tt>
      */
     private void jarWrite(Path jarFile, Path tempFile, Path filePathInJar) throws IOException {
-        Manifest manifest = new Manifest();
+        var manifest = new Manifest();
         manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
 
         try (JarOutputStream out = new JarOutputStream(Files.newOutputStream(jarFile), manifest)) {
@@ -366,15 +364,15 @@ public class Implementor implements JarImpler {
     @Override
     public void implementJar(Class<?> token, Path jarFile) throws ImplerException {
         try {
-            Path rootTemp = Files.createTempDirectory(".");
-            JarImpler implementor = new Implementor();
+            var rootTemp = Files.createTempDirectory(".");
+            var implementor = new Implementor();
             implementor.implement(token, rootTemp);
 
-            Path javaTempFilePath = getImplInterfacePath(token, rootTemp, true, "Impl.java");
+            var javaTempFilePath = getImplInterfacePath(token, rootTemp, true, "Impl.java");
             compileFiles(rootTemp, javaTempFilePath.toString());
 
-            Path classTempFilePath = getImplInterfacePath(token, rootTemp, false, "Impl.class");
-            Path classFilePathInJar = getImplInterfacePath(token, Paths.get(""), false, "Impl.class");
+            var classTempFilePath = getImplInterfacePath(token, rootTemp, false, "Impl.class");
+            var classFilePathInJar = getImplInterfacePath(token, Paths.get(""), false, "Impl.class");
             jarWrite(jarFile, classTempFilePath, classFilePathInJar);
 
 
