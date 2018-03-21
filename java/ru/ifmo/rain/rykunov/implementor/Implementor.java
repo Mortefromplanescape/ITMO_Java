@@ -90,37 +90,38 @@ public class Implementor implements JarImpler {
     }
 
     /**
-     * Generates {@link Path} to realization of <tt>token</tt>.
+     * Gets {@link Path} to lowest directory from <tt>root</tt> to <tt>token</tt>'s package
      *
-     * @param token {@link Class} needed to be realized
-     * @param root  {@link Path} to root of realization of interface
-     * @return {@link Path} to realization of interface
-     * @throws IOException if couldn't create directories to realization of interface or get {@link Path} to it
+     * @param token     {@link Class} which package is used to get directory names
+     * @param root      {@link Path} uses to start from this point
+     * @param createDir <tt>true</tt> if creates directories, <tt>false</tt> else
+     * @return {@link Path} to lowest directory from <tt>root</tt> to <tt>token</tt>'s package
+     * @throws IOException if couldn't create directories or resolve path to <tt>token</tt>'s package
      */
-    private Path getImplInterfacePath(Class<?> token, Path root) throws IOException {
+    private Path getImplInterfaceDirectoryPath(Class<?> token, Path root, boolean createDir) throws IOException {
+        Path directoryPath = root;
         if (token.getPackage() != null) {
-            root = root.resolve(token.getPackage().getName().replace(".", File.separator) + File.separator);
-            Files.createDirectories(root);
+            directoryPath = root.resolve(token.getPackage().getName().replace(".", File.separator) + File.separator);
+            if (createDir) {
+                Files.createDirectories(directoryPath);
+            }
         }
-        return root.resolve(token.getSimpleName() + "Impl.java");
+        return directoryPath;
     }
 
     /**
-     * Generates {@link Path} to compiled realization of <tt>token</tt>.
+     * Generates {@link Path} to realization of <tt>token</tt>.
      *
-     * @param token {@link Class} needed to be realized
-     * @param root  {@link Path} to root of realization of interface
-     * @return {@link Path} to compiled realization of interface
-     * @throws IOException              if couldn't get {@link Path} to <tt>.class</tt> file
-     * @throws IllegalArgumentException if tried to create path to compiled file of not a java file
+     * @param token     {@link Class} needed to be realized
+     * @param root      {@link Path} to root of realization of interface
+     * @param createDir <tt>true</tt> if creates directories, <tt>false</tt> else
+     * @param suffix    suffix of file to create
+     * @return {@link Path} to realization of interface
+     * @throws IOException if couldn't create directories to realization of interface or get {@link Path} to it
      */
-    private Path getImplInterfaceJarPath(Class<?> token, Path root) throws IOException {
-        String interfacePath = getImplInterfacePath(token, root).toString();
-        if (interfacePath.endsWith(".java")) {
-            return Paths.get(interfacePath.substring(0, interfacePath.length() - 5) + ".class");
-        } else {
-            throw new IllegalArgumentException("Token is not a java file");
-        }
+    private Path getImplInterfacePath(Class<?> token, Path root, boolean createDir, String suffix) throws IOException {
+        root = getImplInterfaceDirectoryPath(token, root, createDir);
+        return root.resolve(token.getSimpleName() + suffix);
     }
 
     /**
@@ -256,6 +257,29 @@ public class Implementor implements JarImpler {
     }
 
     /**
+     * Generate unicode-safety char
+     *
+     * @param ch char needs to get unicode-safety
+     * @return unicode-safety char
+     */
+    private String getNormalizeUnicodeChar(char ch) {
+        return ch < 127 ? Character.toString(ch) : String.format("\\u%04X", (int) ch);
+    }
+
+    /**
+     * Prints unicode safety <tt>content</tt> to file
+     *
+     * @param content {@link String} needs to get unicode-safety
+     * @param out     file where prints
+     * @throws IOException if couldn't write to <tt>out</tt>
+     */
+    private void unicodeEscapingOutput(String content, Writer out) throws IOException {
+        for (char ch : content.toCharArray()) {
+            out.write(getNormalizeUnicodeChar(ch));
+        }
+    }
+
+    /**
      * @throws ImplerException if the given class cannot be generated for one of such reasons:
      *                         <ul>
      *                         <li> Some arguments are <tt>null</tt></li>
@@ -274,11 +298,13 @@ public class Implementor implements JarImpler {
             throw new ImplerException("Required interface as first argument");
         }
 
-        try (Writer out = Files.newBufferedWriter(getImplInterfacePath(token, root))) {
-            out.write(String.format("%s %s {%n%s%n}%n",
-                    getPackageString(token),
-                    getHeadString(token, token.getSimpleName() + "Impl"),
-                    getMethodsString(token)));
+        try (Writer out = Files.newBufferedWriter(getImplInterfacePath(token, root, true, "Impl.java"))) {
+            unicodeEscapingOutput(
+                    String.format("%s %s {%n%s%n}%n",
+                            getPackageString(token),
+                            getHeadString(token, token.getSimpleName() + "Impl"),
+                            getMethodsString(token)
+                    ), out);
         } catch (IOException e) {
             throw new ImplerException("Error when writing to required path to Impl file");
         }
@@ -296,22 +322,26 @@ public class Implementor implements JarImpler {
         args.add(file);
         args.add("-cp");
         args.add(root + File.pathSeparator + System.getProperty("java.class.path"));
+        args.add("-encoding");
+        args.add("UTF-8");
         compiler.run(null, null, null, args.toArray(new String[args.size()]));
     }
 
     /**
      * Writes <tt>file</tt> to <tt>.jar</tt> file <tt>jarFile</tt>.
      *
-     * @param jarFile {@link Path} to <tt>.jar</tt> file where writes <tt>file</tt>
-     * @param file    {@link Path} to file needs to be written to <tt>jarFile</tt>
+     * @param jarFile       {@link Path} to <tt>.jar</tt> file where writes <tt>file</tt>
+     * @param tempFile      {@link Path} to file needs to be written to <tt>jarFile</tt>
+     * @param filePathInJar {@link Path} to file in <tt>jarFile</tt>
      * @throws IOException if can't write to <tt>jarFile</tt>
      */
-    private void jarWrite(Path jarFile, Path file) throws IOException {
+    private void jarWrite(Path jarFile, Path tempFile, Path filePathInJar) throws IOException {
         Manifest manifest = new Manifest();
         manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
+
         try (JarOutputStream out = new JarOutputStream(Files.newOutputStream(jarFile), manifest)) {
-            out.putNextEntry(new ZipEntry(file.normalize().toString()));
-            Files.copy(file, out);
+            out.putNextEntry(new ZipEntry(filePathInJar.normalize().toString()));
+            Files.copy(tempFile, out);
             out.closeEntry();
         }
     }
@@ -336,15 +366,18 @@ public class Implementor implements JarImpler {
     @Override
     public void implementJar(Class<?> token, Path jarFile) throws ImplerException {
         try {
-            Path root = Paths.get(".");
+            Path rootTemp = Files.createTempDirectory(".");
             JarImpler implementor = new Implementor();
-            implementor.implement(token, root);
-            Path javaFilePath = getImplInterfacePath(token, root);
-            Path classFilePath = getImplInterfaceJarPath(token, root);
-            compileFiles(root, javaFilePath.toString());
-            jarWrite(jarFile, classFilePath);
-            javaFilePath.toFile().deleteOnExit();
-            classFilePath.toFile().deleteOnExit();
+            implementor.implement(token, rootTemp);
+
+            Path javaTempFilePath = getImplInterfacePath(token, rootTemp, true, "Impl.java");
+            compileFiles(rootTemp, javaTempFilePath.toString());
+
+            Path classTempFilePath = getImplInterfacePath(token, rootTemp, false, "Impl.class");
+            Path classFilePathInJar = getImplInterfacePath(token, Paths.get(""), false, "Impl.class");
+            jarWrite(jarFile, classTempFilePath, classFilePathInJar);
+
+
         } catch (IOException e) {
             System.out.print("ERROR: can't create jar file, because some error with files.");
         }
