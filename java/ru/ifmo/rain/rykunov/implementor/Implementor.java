@@ -61,7 +61,7 @@ public class Implementor implements JarImpler {
                 return;
             }
             if (args.length == 1 && args[0] != null) {
-                implementor.implement(Class.forName(args[0]), Paths.get("."));
+                implementor.implement(Class.forName(args[0]), Paths.get("./implemented"));
             } else {
                 inputError();
             }
