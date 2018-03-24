@@ -27,6 +27,7 @@ Tests and problems were taken from [Korneev Georgy site's](http://kgeorgiy.info)
 
 Решение:
 * [простой вариант](java/ru/ifmo/rain/rykunov/concurrent)
+* [сложный вариант](java/ru/ifmo/rain/rykunov/concurrent)
 
 Тестирование
 
