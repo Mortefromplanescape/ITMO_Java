@@ -23,7 +23,7 @@ public class IterativeParallelism implements ScalarIP {
             final int thread = i;
             final var left = thread * elementsPerThread;
             final var right = min(left + elementsPerThread, values.size());
-            var tempThread = new Thread(() -> answers.add(thread, funcForThreads.apply(values.subList(left, right).stream())));
+            var tempThread = new Thread(() -> answers.set(thread, funcForThreads.apply(values.subList(left, right).stream())));
             tempThread.start();
             threadsList.add(tempThread);
         }
