@@ -8,6 +8,41 @@ Tests and problems were taken from [Korneev Georgy site's](http://kgeorgiy.info)
 
 По умолчанию salt = ""
 
+## Домашнее задание 7. Итеративный параллелизм
+
+Условие:
+  1. Реализуйте класс `IterativeParallelism`, который будет обрабатывать списки в несколько потоков.
+  2. В простом варианте должны быть реализованы следующие методы:
+     * `minimum(threads, list, comparator)` — первый минимум;
+     * `maximum(threads, list, comparator)` — первый максимум;
+     * `all(threads, list, predicate)` — проверка, что все элементы списка удовлетворяют предикату;
+     * `any(threads, list, predicate)` — проверка, что существует элемент списка, удовлетворяющий предикату.
+  3. В сложном варианте должны быть дополнительно реализованы следующие методы:
+     * `filter(threads, list, predicate)` — вернуть список, содержащий элементы удовлетворяющие предикату;
+     * `map(threads, list, function)` — вернуть список, содержащий результаты применения функции;
+     * `join(threads, list)` — конкатенация строковых представлений элементов списка.
+  4. Во все функции передается параметр `threads` — сколько потоков надо использовать при вычислении. Вы можете рассчитывать, что число потоков не велико.
+  5. Не следует рассчитывать на то, что переданные компараторы, предикаты и функции работают быстро.
+  6. При выполнении задания нельзя использовать `Concurrency Utilities`.
+
+Тестирование
+
+ * простой вариант:
+    ```info.kgeorgiy.java.advanced.concurrent.Tester scalar <полное имя класса>```
+
+  Класс должен реализовывать интерфейс
+  [ScalarIP](java/info/kgeorgiy/java/advanced/concurrent/ScalarIP.java).
+
+ * сложный вариант:
+    ```info.kgeorgiy.java.advanced.concurrent.Tester list <полное имя класса>```
+
+  Класс должен реализовывать интерфейс
+  [ListIP](java/info/kgeorgiy/java/advanced/concurrent/ListIP.java).
+
+Исходный код тестов:
+
+* [простой вариант](java/info/kgeorgiy/java/advanced/concurrent/ScalarIPTest.java)
+* [сложный вариант](java/info/kgeorgiy/java/advanced/concurrent/ListIPTest.java)
 
 # Домашнее задание 6. Javadoc
 
