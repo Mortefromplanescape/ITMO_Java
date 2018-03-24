@@ -44,7 +44,7 @@ Tests and problems were taken from [Korneev Georgy site's](http://kgeorgiy.info)
 * [простой вариант](java/info/kgeorgiy/java/advanced/concurrent/ScalarIPTest.java)
 * [сложный вариант](java/info/kgeorgiy/java/advanced/concurrent/ListIPTest.java)
 
-# Домашнее задание 6. Javadoc
+## Домашнее задание 6. Javadoc
 
 Условие:
   1. Документируйте класс `Implementor` и сопутствующие классы с применением **Javadoc**.
@@ -58,7 +58,7 @@ Tests and problems were taken from [Korneev Georgy site's](http://kgeorgiy.info)
 Генерация **Javadoc**: (bash)
   * `./JDCreator.sh` Перед этим сделать скрипт исполняемым.
 
-# Домашнее задание 5. JarImplementor
+## Домашнее задание 5. JarImplementor
 
 Условие:
   1. Создайте *.jar*-файл, содержащий скомпилированный `Implementor` и сопутствующие классы.
