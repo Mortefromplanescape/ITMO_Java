@@ -23,7 +23,7 @@ Tests and problems were taken from [Korneev Georgy site's](http://kgeorgiy.info)
      * `join(threads, list)` — конкатенация строковых представлений элементов списка.
   4. Во все функции передается параметр `threads` — сколько потоков надо использовать при вычислении. Вы можете рассчитывать, что число потоков не велико.
   5. Не следует рассчитывать на то, что переданные компараторы, предикаты и функции работают быстро.
-  6. При выполнении задания нельзя использовать `Concurrency Utilities`.
+  6. При выполнении задания нельзя использовать *Concurrency Utilities*.
 
 Тестирование
 
@@ -44,7 +44,7 @@ Tests and problems were taken from [Korneev Georgy site's](http://kgeorgiy.info)
 * [простой вариант](java/info/kgeorgiy/java/advanced/concurrent/ScalarIPTest.java)
 * [сложный вариант](java/info/kgeorgiy/java/advanced/concurrent/ListIPTest.java)
 
-# Домашнее задание 6. Javadoc
+## Домашнее задание 6. Javadoc
 
 Условие:
   1. Документируйте класс `Implementor` и сопутствующие классы с применением **Javadoc**.
@@ -58,7 +58,7 @@ Tests and problems were taken from [Korneev Georgy site's](http://kgeorgiy.info)
 Генерация **Javadoc**: (bash)
   * `./JDCreator.sh` Перед этим сделать скрипт исполняемым.
 
-# Домашнее задание 5. JarImplementor
+## Домашнее задание 5. JarImplementor
 
 Условие:
   1. Создайте *.jar*-файл, содержащий скомпилированный `Implementor` и сопутствующие классы.
