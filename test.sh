@@ -46,6 +46,9 @@ case "$hw" in
   "6")
   echo "Use JDCreator.sh to generate JD"
   ;;
+  "7")
+  test "concurrent" "IterativeParallelismTest" $2 "scalar" "list" "IterativeParallelism"
+  ;;
   esac
 
 exit 0
