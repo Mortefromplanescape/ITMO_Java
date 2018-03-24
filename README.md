@@ -25,6 +25,9 @@ Tests and problems were taken from [Korneev Georgy site's](http://kgeorgiy.info)
   5. Не следует рассчитывать на то, что переданные компараторы, предикаты и функции работают быстро.
   6. При выполнении задания нельзя использовать *Concurrency Utilities*.
 
+Решение:
+* [простой вариант](java/ru/ifmo/rain/rykunov/concurrent)
+
 Тестирование
 
  * простой вариант:
