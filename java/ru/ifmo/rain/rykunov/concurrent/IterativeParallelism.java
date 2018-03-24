@@ -1,4 +1,5 @@
 package ru.ifmo.rain.rykunov.concurrent;
+
 import info.kgeorgiy.java.advanced.concurrent.ScalarIP;
 import java.util.*;
 import java.util.function.Function;
