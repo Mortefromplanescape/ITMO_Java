@@ -8,7 +8,20 @@ function removeClassFiles {
 }
 
 function execute {
-  java -cp ./java:./artifacts/$1.jar:./lib/* info.kgeorgiy.java.advanced.$2.Tester $3 ru.ifmo.rain.rykunov.$2.$4 $5
+  java -cp ./java/:./artifacts/$1.jar:./lib/* info.kgeorgiy.java.advanced.$2.Tester $3 ru.ifmo.rain.rykunov.$2.$4 $5
+}
+
+function test {
+  compile $1 $2
+  case "$3" in
+    "easy")
+    execute $2 $1 $4 $6 $salt
+    ;;
+    "hard")
+    execute $2 $1 $5 $6 $salt
+    ;;
+  esac
+  removeClassFiles $1
 }
 
 hw=$1
@@ -16,60 +29,25 @@ type=$2
 salt=$3
 case "$hw" in
   "1")
-  compile "walk" "WalkTest"
-  case "$type" in
-    "easy")
-    execute "WalkTest" "walk" "Walk" "RecursiveWalk" $salt
-    ;;
-    "hard")
-    execute "WalkTest" "walk" "RecursiveWalk" "RecursiveWalk" $salt
-    ;;
-  esac
-  removeClassFiles "walk"
+  test "walk" "WalkTest" $2 "Walk" "RecursiveWalk" "RecursiveWalk"
   ;;
   "2")
-  compile "arrayset" "ArraySetTest"
-  case "$type" in
-    "easy")
-    execute "ArraySetTest" "arrayset" "SortedSet" "ArraySet" $salt
-    ;;
-    "hard")
-    execute "ArraySetTest" "arrayset" "NavigableSet" "ArraySet" $salt
-    ;;
-  esac
-  removeClassFiles "arrayset"
+  test "arrayset" "ArraySetTest" $2 "SortedSet" "NavigableSet" "ArraySet"
   ;;
   "3")
-  compile "student" "StudentTest"
-  case "$type" in
-    "easy")
-    execute "StudentTest" "student" "StudentQuery" "StudentDB" $salt
-    ;;
-  esac
-  removeClassFiles "student"
+  test "student" "StudentTest" $2 "StudentQuery" "StudentGroupQuery" "StudentDB"
   ;;
   "4")
-  compile "implementor" "JarImplementorTest"
-  case "$type" in
-    "easy")
-        execute "JarImplementorTest" "implementor" "interface" "Implementor" $salt
-    ;;
-    "hard")
-        execute "JarImplementorTest" "implementor" "class" "Implementor" $salt
-    ;;
-    esac
+  test "implementor" "JarImplementorTest" $2 "interface" "class" "Implementor"
   ;;
   "5")
-  compile "implementor" "JarImplementorTest"
-  case "$type" in
-    "easy")
-        execute "JarImplementorTest" "implementor" "jar-interface" "Implementor" $salt
-    ;;
-    "hard")
-        execute "JarImplementorTest" "implementor" "jar-class" "Implementor" $salt
+  test "implementor" "JarImplementorTest" $2 "jar-interface" "jar-class" "Implementor"
   ;;
-  esac
-  removeClassFiles "implementor"
+  "6")
+  echo "Use JDCreator.sh to generate JD"
+  ;;
+  "7")
+  test "concurrent" "IterativeParallelismTest" $2 "scalar" "list" "IterativeParallelism"
   ;;
   esac
 
