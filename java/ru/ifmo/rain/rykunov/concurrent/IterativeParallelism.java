@@ -1,6 +1,7 @@
 package ru.ifmo.rain.rykunov.concurrent;
 
 import info.kgeorgiy.java.advanced.concurrent.ListIP;
+
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -12,7 +13,7 @@ import static java.lang.Math.min;
 
 public class IterativeParallelism implements ListIP {
 
-    private <T, E> E applyFunction(int threads, List<? extends T> values, Function<Stream<? extends T>, E> funcForThreads, Function<Stream<? extends E>, E> funcAfterThreads) throws InterruptedException {
+    private <T, E, F> F applyFunction(int threads, List<? extends T> values, Function<Stream<? extends T>, E> funcForThreads, Function<Stream<? extends E>, F> funcAfterThreads) throws InterruptedException {
         var threadsList = new ArrayList<Thread>();
         threads = min(threads, values.size());
         var elementsPerThread = values.size() / threads;
@@ -39,7 +40,7 @@ public class IterativeParallelism implements ListIP {
         return applyFunction(
                 threads,
                 values,
-                (Function<Stream<? extends T>, T>) x -> x.max(comparator).get(),
+                x -> x.max(comparator).get(),
                 x -> x.max(comparator).get()
         );
     }
@@ -74,9 +75,13 @@ public class IterativeParallelism implements ListIP {
         return applyFunction(
                 threads,
                 values,
-                (Function<Stream<?>, String>) x -> x.map(Object::toString).collect(Collectors.joining()),
+                x -> x.map(Object::toString).collect(Collectors.joining()),
                 x -> x.collect(Collectors.joining())
         );
+    }
+
+    private <T> Function<Stream<? extends Stream<? extends T>>, List<T>> mergeStreams() {
+        return x -> x.flatMap(Function.identity()).collect(Collectors.toCollection(ArrayList::new));
     }
 
     @Override
@@ -84,9 +89,9 @@ public class IterativeParallelism implements ListIP {
         return applyFunction(
                 threads,
                 values,
-                (Function<Stream<? extends T>, Stream<? extends T>>) x -> x.filter(predicate),
-                x -> x.flatMap(Function.identity())
-        ).collect(Collectors.toCollection(ArrayList::new));
+                x -> x.filter(predicate),
+                mergeStreams()
+        );
     }
 
     @Override
@@ -94,8 +99,8 @@ public class IterativeParallelism implements ListIP {
         return applyFunction(
                 threads,
                 values,
-                (Function<Stream<? extends T>, Stream<? extends U>>) x -> x.map(f),
-                x -> x.flatMap(Function.identity())
-        ).collect(Collectors.toCollection(ArrayList::new));
+                x -> x.map(f),
+                mergeStreams()
+        );
     }
 }
