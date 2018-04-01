@@ -14,23 +14,41 @@ import static java.lang.Math.min;
 public class IterativeParallelism implements ListIP {
 
     private <T, E, F> F applyFunction(int threads, List<? extends T> values, Function<Stream<? extends T>, E> funcForThreads, Function<Stream<? extends E>, F> funcAfterThreads) throws InterruptedException {
+        if (threads == 0 || values == null) {
+            throw new IllegalArgumentException("ERROR: excepted threads != 0 and non null values");
+        }
         var threadsList = new ArrayList<Thread>();
         threads = min(threads, values.size());
         var elementsPerThread = values.size() / threads;
+        var tail = values.size() % threads;
+        var pos = 0;
         final var answers = new ArrayList<E>(threads);
         for (int i = 0; i < threads; i++) {
             answers.add(funcForThreads.apply(Stream.of(values.get(i))));
         }
+
         for (int i = 0; i < threads; i++) {
             final int thread = i;
-            final var left = thread * elementsPerThread;
-            final var right = i == threads - 1 ? values.size() : left + elementsPerThread;
+            final var left = pos;
+            final var right = min(values.size(), pos + elementsPerThread + (tail > 0 ? 1 : 0));
             var tempThread = new Thread(() -> answers.set(thread, funcForThreads.apply(values.subList(left, right).stream())));
             tempThread.start();
             threadsList.add(tempThread);
+            if (tail > 0) {
+                tail--;
+            }
+            pos = right;
         }
+        boolean throwsInterruptedExc = false;
         for (var thread : threadsList) {
-            thread.join();
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                throwsInterruptedExc = true;
+            }
+        }
+        if (throwsInterruptedExc) {
+            throw new InterruptedException("Interrupted when counting function");
         }
         return funcAfterThreads.apply(answers.stream());
     }
