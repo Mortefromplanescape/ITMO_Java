@@ -24,6 +24,14 @@ import java.util.zip.ZipEntry;
  * The class implements {@link JarImpler} interface.
  */
 public class Implementor implements JarImpler {
+
+    /**
+     * Instantiates new {@link Implementor} class object.
+     */
+    public Implementor() {
+
+    }
+
     /**
      * Prints error from main function.
      */
@@ -185,8 +193,8 @@ public class Implementor implements JarImpler {
      */
     private String getMethodHeadString(Method method) {
         return String.format(
-                "%s%n%s%s %s %s (%s) %s",
-                Arrays.stream(method.getDeclaredAnnotations()).map(Annotation::toString).collect(Collectors.joining("%n")),
+                "%n%s%s %s %s (%s) %s",
+                //Arrays.stream(method.getDeclaredAnnotations()).map(Annotation::toString).collect(Collectors.joining("%n")),
                 getIndent(1),
                 Modifier.toString(method.getModifiers() & ~(Modifier.ABSTRACT | Modifier.TRANSIENT)),
                 method.getReturnType().getCanonicalName(),
