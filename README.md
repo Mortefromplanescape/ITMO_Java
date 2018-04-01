@@ -8,6 +8,24 @@ Tests and problems were taken from [Korneev Georgy site's](http://kgeorgiy.info)
 
 По умолчанию salt = ""
 
+## Домашнее задание 8. Параллельный запуск
+
+Тестирование
+
+ * простой вариант:
+    ```info.kgeorgiy.java.advanced.mapper.Tester scalar <ParallelMapperImpl>,<IterativeParallelism>```
+ * сложный вариант:
+    ```info.kgeorgiy.java.advanced.mapper.Tester list <ParallelMapperImpl>,<IterativeParallelism>```
+
+Внимание! Между полными именами классов `ParallelMapperImpl` и `IterativeParallelism`
+должна быть запятая и не должно быть пробелов.
+
+Исходный код тестов:
+
+* [простой вариант](java/info/kgeorgiy/java/advanced/mapper/ScalarMapperTest.java)
+* [сложный вариант](java/info/kgeorgiy/java/advanced/mapper/ListMapperTest.java)
+
+
 ## Домашнее задание 7. Итеративный параллелизм
 
 Условие:
