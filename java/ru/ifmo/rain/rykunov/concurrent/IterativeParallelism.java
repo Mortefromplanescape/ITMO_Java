@@ -13,32 +13,37 @@ import static java.lang.Math.min;
 
 public class IterativeParallelism implements ListIP {
 
-    private <T, E, F> F applyFunction(int threads, List<? extends T> values, Function<Stream<? extends T>, E> funcForThreads, Function<Stream<? extends E>, F> funcAfterThreads) throws InterruptedException {
-        if (threads == 0 || values == null) {
-            throw new IllegalArgumentException("ERROR: excepted threads != 0 and non null values");
+    private <T, E, F> F applyFunction(int threads, List<? extends T> values, Function<Stream<? extends T>, E> funcForThreads, Function<Stream<E>, F> funcAfterThreads) throws InterruptedException {
+        if (threads <= 0 || values == null) {
+            throw new IllegalArgumentException("ERROR: excepted natural number `threads` and non-null `values`");
         }
+
         var threadsList = new ArrayList<Thread>();
         threads = min(threads, values.size());
-        var elementsPerThread = values.size() / threads;
-        var tail = values.size() % threads;
-        var pos = 0;
+
         final var answers = new ArrayList<E>(threads);
         for (int i = 0; i < threads; i++) {
             answers.add(funcForThreads.apply(Stream.of(values.get(i))));
         }
 
+        int elementsPerThread = values.size() / threads;
+        int tail = values.size() % threads;
+        int pos = 0;
         for (int i = 0; i < threads; i++) {
             final int thread = i;
             final var left = pos;
             final var right = min(values.size(), pos + elementsPerThread + (tail > 0 ? 1 : 0));
+
             var tempThread = new Thread(() -> answers.set(thread, funcForThreads.apply(values.subList(left, right).stream())));
             tempThread.start();
             threadsList.add(tempThread);
+
             if (tail > 0) {
                 tail--;
             }
             pos = right;
         }
+
         boolean throwsInterruptedExc = false;
         for (var thread : threadsList) {
             try {
@@ -47,9 +52,11 @@ public class IterativeParallelism implements ListIP {
                 throwsInterruptedExc = true;
             }
         }
+
         if (throwsInterruptedExc) {
             throw new InterruptedException("Interrupted when counting function");
         }
+
         return funcAfterThreads.apply(answers.stream());
     }
 
@@ -98,7 +105,7 @@ public class IterativeParallelism implements ListIP {
         );
     }
 
-    private <T> Function<Stream<? extends Stream<? extends T>>, List<T>> mergeStreams() {
+    private <T> Function<Stream<Stream<? extends T>>, List<T>> mergeStreams() {
         return x -> x.flatMap(Function.identity()).collect(Collectors.toCollection(ArrayList::new));
     }
 
