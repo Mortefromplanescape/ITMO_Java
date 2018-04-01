@@ -13,7 +13,7 @@ import static java.lang.Math.min;
 
 public class IterativeParallelism implements ListIP {
 
-    private <T, E, F> F applyFunction(int threads, List<? extends T> values, Function<Stream<? extends T>, E> funcForThreads, Function<Stream<E>, F> funcAfterThreads) throws InterruptedException {
+    private <T, E, F> F applyFunction(int threads, List<? extends T> values, Function<Stream<? extends T>, E> funcForThreads, Function<Stream<? extends E>, F> funcAfterThreads) throws InterruptedException {
         if (threads <= 0 || values == null) {
             throw new IllegalArgumentException("ERROR: excepted natural number `threads` and non-null `values`");
         }
@@ -105,7 +105,7 @@ public class IterativeParallelism implements ListIP {
         );
     }
 
-    private <T> Function<Stream<Stream<? extends T>>, List<T>> mergeStreams() {
+    private <T> Function<Stream<? extends Stream<? extends T>>, List<T>> mergeStreams() {
         return x -> x.flatMap(Function.identity()).collect(Collectors.toCollection(ArrayList::new));
     }
 
