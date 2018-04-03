@@ -1,6 +1,7 @@
-package ru.ifmo.rain.rykunov.concurrent;
+package ru.ifmo.rain.rykunov.mapper;
 
 import info.kgeorgiy.java.advanced.concurrent.ListIP;
+import info.kgeorgiy.java.advanced.mapper.ParallelMapper;
 
 import java.util.*;
 import java.util.function.Function;
@@ -9,52 +10,65 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.Math.min;
+import static ru.ifmo.rain.rykunov.mapper.ConcurrentUtils.*;
 
 
 public class IterativeParallelism implements ListIP {
+    private final ParallelMapper mapper;
 
-    private <T, E, F> F applyFunction(int threads, List<? extends T> values, Function<Stream<? extends T>, E> funcForThreads, Function<Stream<? extends E>, F> funcAfterThreads) throws InterruptedException {
-        if (threads <= 0 || values == null) {
-            throw new IllegalArgumentException("ERROR: excepted natural number `threads` and non-null `values`");
-        }
+    public IterativeParallelism(ParallelMapper mapper) {
+        this.mapper = mapper;
+    }
 
-        var threadsList = new ArrayList<Thread>();
-        threads = min(threads, values.size());
-
-        final var answers = new ArrayList<E>(threads);
-        for (int i = 0; i < threads; i++) {
-            answers.add(funcForThreads.apply(Stream.of(values.get(i))));
-        }
+    private <T> List<Stream<? extends T>> split(int threads, List<? extends T> values) {
+        final var splitList = new ArrayList<Stream<? extends T>>();
 
         int elementsPerThread = values.size() / threads;
         int tail = values.size() % threads;
         int pos = 0;
+
         for (int i = 0; i < threads; i++) {
-            final int thread = i;
-            final var left = pos;
             final var right = min(values.size(), pos + elementsPerThread + (tail > 0 ? 1 : 0));
-
-            var tempThread = new Thread(() -> answers.set(thread, funcForThreads.apply(values.subList(left, right).stream())));
-            tempThread.start();
-            threadsList.add(tempThread);
-
+            splitList.add(values.subList(pos, right).stream());
             if (tail > 0) {
                 tail--;
             }
             pos = right;
         }
 
-        boolean throwsInterruptedExc = false;
-        for (var thread : threadsList) {
-            try {
-                thread.join();
-            } catch (InterruptedException e) {
-                throwsInterruptedExc = true;
-            }
+        return splitList;
+    }
+
+    private <T, E> List<Thread> execute(int threads, List<? extends Stream<? extends T>> values, Function<Stream<? extends T>, E> funcForThreads, List<E> answers) {
+        var threadsList = new ArrayList<Thread>();
+
+        for (int i = 0; i < threads; i++) {
+            final int thread = i;
+            startThreadAndAddItToList(
+                    new Thread(() ->
+                            answers.set(thread, funcForThreads.apply(values.get(thread)))),
+                    threadsList);
         }
 
-        if (throwsInterruptedExc) {
-            throw new InterruptedException("Interrupted when counting function");
+        return threadsList;
+    }
+
+    private <T, E, F> F applyFunction(int threads, List<? extends T> values, Function<Stream<? extends T>, E> funcForThreads, Function<Stream<? extends E>, F> funcAfterThreads) throws InterruptedException {
+        if (threads <= 0 || values == null) {
+            throw new IllegalArgumentException("ERROR: excepted natural number `threads` and non-null `values`");
+        }
+
+        threads = min(threads, values.size());
+        final var splitList = split(threads, values);
+        List<E> answers;
+        if (mapper != null) {
+            answers = mapper.map(funcForThreads, splitList);
+        } else {
+            answers = new ArrayList<>(Collections.nCopies(threads, null));
+            final var threadsList = execute(threads, splitList, funcForThreads, answers);
+            if (waitForThreads(threadsList)) {
+                throw new InterruptedException("Interrupted when counting function");
+            }
         }
 
         return funcAfterThreads.apply(answers.stream());

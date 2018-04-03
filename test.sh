@@ -47,8 +47,11 @@ case "$hw" in
   echo "Use JDCreator.sh to generate JD"
   ;;
   "7")
-  test "concurrent" "IterativeParallelismTest" $2 "scalar" "list" "IterativeParallelism"
+  echo "Test 8 hw"
+  # test "concurrent" "IterativeParallelismTest" $2 "scalar" "list" "IterativeParallelism"
   ;;
+  "8")
+  test "mapper" "ParallelMapperTest" $2 "scalar" "list" "ParallelMapperImpl,ru.ifmo.rain.rykunov.mapper.IterativeParallelism"
   esac
 
 exit 0

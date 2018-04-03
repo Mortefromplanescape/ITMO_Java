@@ -44,8 +44,8 @@ Tests and problems were taken from [Korneev Georgy site's](http://kgeorgiy.info)
   6. При выполнении задания нельзя использовать *Concurrency Utilities*.
 
 Решение:
-* [простой вариант](java/ru/ifmo/rain/rykunov/concurrent)
-* [сложный вариант](java/ru/ifmo/rain/rykunov/concurrent)
+* [простой вариант](java/ru/ifmo/rain/rykunov/mapper)
+* [сложный вариант](java/ru/ifmo/rain/rykunov/mapper)
 
 Тестирование
 
