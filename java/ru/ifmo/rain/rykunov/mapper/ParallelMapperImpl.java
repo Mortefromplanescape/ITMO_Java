@@ -31,6 +31,7 @@ public class ParallelMapperImpl implements ParallelMapper {
                 tasks.wait();
             }
             currentTask = tasks.poll();
+            tasks.notify();
         }
 
         currentTask.run();
