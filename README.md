@@ -9,16 +9,11 @@ Tests and problems were taken from [Korneev Georgy site's](http://kgeorgiy.info)
 По умолчанию salt = ""
 
 ## Домашнее задание 8. Параллельный запуск
+Условие:
 
-Тестирование
-
- * простой вариант:
-    ```info.kgeorgiy.java.advanced.mapper.Tester scalar <ParallelMapperImpl>,<IterativeParallelism>```
- * сложный вариант:
-    ```info.kgeorgiy.java.advanced.mapper.Tester list <ParallelMapperImpl>,<IterativeParallelism>```
-
-Внимание! Между полными именами классов `ParallelMapperImpl` и `IterativeParallelism`
-должна быть запятая и не должно быть пробелов.
+Решение:
+* [простой вариант](java/ru/ifmo/rain/rykunov/mapper)
+* [сложный вариант](java/ru/ifmo/rain/rykunov/mapper)
 
 Исходный код тестов:
 
@@ -47,19 +42,9 @@ Tests and problems were taken from [Korneev Georgy site's](http://kgeorgiy.info)
 * [простой вариант](java/ru/ifmo/rain/rykunov/mapper)
 * [сложный вариант](java/ru/ifmo/rain/rykunov/mapper)
 
-Тестирование
-
- * простой вариант:
-    ```info.kgeorgiy.java.advanced.concurrent.Tester scalar <полное имя класса>```
-
-  Класс должен реализовывать интерфейс
-  [ScalarIP](java/info/kgeorgiy/java/advanced/concurrent/ScalarIP.java).
-
- * сложный вариант:
-    ```info.kgeorgiy.java.advanced.concurrent.Tester list <полное имя класса>```
-
-  Класс должен реализовывать интерфейс
-  [ListIP](java/info/kgeorgiy/java/advanced/concurrent/ListIP.java).
+Интерфейсы:
+* простой вариант класс должен реализовывать интерфейс [ScalarIP](java/info/kgeorgiy/java/advanced/concurrent/ScalarIP.java).
+* сложный вариант класс должен реализовывать интерфейс [ListIP](java/info/kgeorgiy/java/advanced/concurrent/ListIP.java).
 
 Исходный код тестов:
 
