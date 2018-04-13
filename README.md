@@ -54,7 +54,7 @@ Tests and problems were taken from [Korneev Georgy site's](http://kgeorgiy.info)
      * Ссылки, возвращаемые документом являются абсолютными и имеют схему *http* или *https*.
   4. Должен быть реализован метод `main`, позволяющий запустить обход из командной строки
      * Командная строка
-        > `WebCrawler url [downloads [extractors [perHost]]]`
+        > WebCrawler url [downloads [extractors [perHost]]]
      * Для загрузки страниц требуется использовать реализацию `CachingDownloader` из тестов.
 
 Исходный код тестов:
