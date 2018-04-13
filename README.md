@@ -8,13 +8,54 @@ Tests and problems were taken from [Korneev Georgy site's](http://kgeorgiy.info)
 
 По умолчанию salt = ""
 ## Домашнее задание 9. Web Crawler
-
-Тестирование
-
- * простой вариант:
-    ```info.kgeorgiy.java.advanced.crawler.Tester easy <полное имя класса>```
- * сложный вариант:
-    ```info.kgeorgiy.java.advanced.crawler.Tester hard <полное имя класса>```
+Условие:
+ 
+  Напишите потокобезопасный класс `WebCrawler`, который будет рекурсивно обходить сайты.
+  1. Класс `WebCrawler` должен иметь конструктор
+     ```java
+     public WebCrawler(Downloader downloader, int downloaders, int extractors, int perHost)
+     ```
+     * `downloader` позволяет скачивать страницы и извлекать из них ссылки;
+     * `downloaders` — максимальное число одновременно загружаемых страниц;
+     * `extractors` — максимальное число страниц, из которых извлекаются ссылки;
+     * `perHost` — максимальное число страниц, одновременно загружаемых c одного хоста. 
+       Для опредения хоста следует использовать метод `getHost` класса `URLUtils` из тестов.
+  2. Класс `WebCrawler` должен реализовывать интерфейс `Crawler`
+     ```java
+     public interface Crawler extends AutoCloseable {
+         List<String> download(String url, int depth) throws IOException;
+         void close();
+     }
+     ```
+     * Метод `download` должен рекурсивно обходить страницы, начиная с указанного `URL` на указанную глубину 
+       и возвращать список загруженных страниц и файлов. 
+       - Например, если глубина равна 1, то должна быть загружена только указанная страница. 
+       - Если глубина равна 2, то указанная страница и те страницы и файлы, на которые она ссылается и так далее. 
+       - Этот метод может вызываться параллельно в нескольких потоках.
+     * Загрузка и обработка страниц (извлечение ссылок) должна выполняться максимально параллельно, 
+       с учетом ограничений на число одновременно загружаемых страниц (в том числе с одного хоста) 
+       и страниц, с которых загружаются ссылки.
+     * Для распараллеливания разрешается создать до *downloaders + extractors* вспомогательных потоков.
+     * Загружать и/или извлекать ссылки из одной и той же страницы запрещается.
+     * Метод `close` должен завершать все вспомогательные потоки.
+  3. Для загрузки страниц должен применяться `Downloader`, передаваемый первым аргументом конструктора.
+     ```java
+     public interface Downloader {
+     	public Document download(final String url) throws IOException;
+     }
+     ```
+     * Метод `download` загружает документ по его адресу (`URL`).
+     * Документ позволяет получить ссылки по загруженной странице:
+       ```java
+       public interface Document {
+           List<String> extractLinks() throws IOException;
+       }
+       ```
+     * Ссылки, возвращаемые документом являются абсолютными и имеют схему *http* или *https*.
+  4. Должен быть реализован метод `main`, позволяющий запустить обход из командной строки
+     * Командная строка
+        > `WebCrawler url [downloads [extractors [perHost]]]`
+     * Для загрузки страниц требуется использовать реализацию `CachingDownloader` из тестов.
 
 Исходный код тестов:
 
@@ -24,6 +65,30 @@ Tests and problems were taken from [Korneev Georgy site's](http://kgeorgiy.info)
 
 ## Домашнее задание 8. Параллельный запуск
 Условие:
+  1. Напишите класс `ParallelMapperImpl`, реализующий интерфейс `ParallelMapper`.
+     ```java 
+     public interface ParallelMapper extends AutoCloseable {
+         <T, R> List<R> run(
+             Function<? super T, ? extends R> f, 
+             List<? extends T> args
+         ) throws InterruptedException;
+     
+         @Override
+         void close() throws InterruptedException;
+     }
+     ```
+     * Метод run должен параллельно вычислять функцию *f* на каждом из указанных аргументов (*args*).
+     * Метод `close` должен останавливать все рабочие потоки.
+     * Конструктор `ParallelMapperImpl(int threads)` создает `threads` рабочих потоков, 
+       которые могут быть использованы для распараллеливания.
+     * К одному `ParallelMapperImpl` могут одновременно обращаться несколько клиентов.
+     * Задания на исполнение должны накапливаться в очереди и обрабатываться в порядке поступления.
+       В реализации не должно быть активных ожиданий.
+  2. Модифицируйте касс `IterativeParallelism` так, чтобы он мог использовать `ParallelMapper`.
+     * Добавьте конструктор `IterativeParallelism(ParallelMapper)`
+     * Методы класса должны делить работу на `threads` фрагментов и исполнять их при помощи `ParallelMapper`.
+     * Должна быть возможность одновременного запуска и работы нескольких клиентов, использующих один `ParallelMapper`.
+     * При наличии `ParallelMapper` сам `IterativeParallelism` новые потоки создавать не должен.
 
 Решение:
 * [простой вариант](java/ru/ifmo/rain/rykunov/mapper)
