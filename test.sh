@@ -52,6 +52,15 @@ case "$hw" in
   ;;
   "8")
   test "mapper" "ParallelMapperTest" $2 "scalar" "list" "ParallelMapperImpl,ru.ifmo.rain.rykunov.mapper.IterativeParallelism"
+  ;;
+  "9")
+  echo "Missed :("
+  ;;
+  "10")
+  printf "Server testing...\n"
+  test "hello" "HelloUDPTest" $2 "server" "server-i18n" "HelloUDPServer"
+  printf "Client testing...\n"
+  test "hello" "HelloUDPTest" $2 "client" "client-i18n" "HelloUDPClient"
   esac
 
 exit 0
